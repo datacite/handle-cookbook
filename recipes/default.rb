@@ -26,7 +26,7 @@ execute "tar" do
   cwd node['handle']['dir']
   action :run
   command "tar xvzf hnr-source/hsj-#{node['handle']['version']}.tar.gz"
-  not_if{ ::File.directory?("#{node['handle']['dir']}/hsj-#{node['handle']['version']}")
+  not_if{ ::File.directory?("#{node['handle']['dir']}/hsj-#{node['handle']['version']}") }
 end
 
 # install directory for handle server
