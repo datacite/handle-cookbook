@@ -50,7 +50,7 @@ end
 execute "install" do
   user "root"
   group "root"
-  cwd "#{node['handle']['dir']}/#{node['handle']['server_name']}"
+  cwd "#{node['handle']['dir']}/hsj-#{node['handle']['version']}"
   action :run
   command "bin/hdl-setup-server #{node['handle']['dir']}/#{node['handle']['server_name']}"
 end
