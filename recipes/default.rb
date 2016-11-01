@@ -37,8 +37,20 @@ directory "#{node['handle']['dir']}/#{node['handle']['server_name']}" do
   action :create
 end
 
-execute "bin/hdl-setup-server #{node['handle']['dir']}/#{node['handle']['server_name']}" do
-  cwd "#{node['handle']['dir']}/hsj-#{node['handle']['version']}"
-  action :run
+# handle server configuration
+template 'config.dct' do
+  path   "#{node['handle']['dir']}/#{node['handle']['server_name']}/config.dct"
+  source 'config.dct.erb'
+  owner  'root'
+  group  'root'
+  mode   '0644'
+  cookbook 'handle'
 end
 
+execute "install" do
+  user "root"
+  group "root"
+  cwd "#{node['handle']['dir']}/#{node['handle']['server_name']}"
+  action :run
+  command "bin/hdl-setup-server #{node['handle']['dir']}/#{node['handle']['server_name']}"
+end
