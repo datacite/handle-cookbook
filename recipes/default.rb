@@ -10,8 +10,8 @@ directory node['handle']['dir'] do
 end
 
 # download source code
-tarball = "hnr-source/hsj-#{node['handle']['version']}.tar.gz"
-download_url = "http://www.handle.net/#{tarball}"
+tarball = "hsj-#{node['handle']['version']}.tar.gz"
+download_url = "http://www.handle.net/hnr-source/#{tarball}"
 
 remote_file "#{node['handle']['dir']}/#{tarball}" do
   source download_url
@@ -25,7 +25,7 @@ execute "tar" do
   group "root"
   cwd node['handle']['dir']
   action :run
-  command "tar xvzf hnr-source/hsj-#{node['handle']['version']}.tar.gz"
+  command "tar xvzf #{tarball}"
   not_if{ ::File.directory?("#{node['handle']['dir']}/hsj-#{node['handle']['version']}") }
 end
 
