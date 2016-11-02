@@ -1,4 +1,5 @@
 include_recipe 'java'
+include_recipe 'expect'
 
 # root directory for handle server
 directory node['handle']['dir'] do
@@ -61,11 +62,16 @@ node['handle']['servers'].each do |server|
     )
   end
 
-  execute "install" do
-    user "root"
-    group "root"
-    cwd "#{node['handle']['dir']}/hsj-#{node['handle']['version']}"
-    action :run
-    command "bin/hdl-setup-server #{node['handle']['dir']}/#{server['name']}"
-  end
-end
+# expect_script "install handle server" do
+#   cwd "#{node['handle']['dir']}/hsj-#{node['handle']['version']}"
+#   code <<-EOH
+#     spawn bin/hdl-setup-server #{node['handle']['dir']}/#{server['name']}
+#     expect {
+#       -regexp "ftp.*" {
+#         exp_send "bye\r"
+#         exp_continue
+#       }
+#       eof
+#     }
+#   EOH
+# end
