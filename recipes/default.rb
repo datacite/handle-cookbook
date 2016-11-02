@@ -29,28 +29,43 @@ execute "tar" do
   not_if{ ::File.directory?("#{node['handle']['dir']}/hsj-#{node['handle']['version']}") }
 end
 
-# install directory for handle server
-directory "#{node['handle']['dir']}/#{node['handle']['server_name']}" do
-  owner 'root'
-  group 'root'
-  mode '0755'
-  action :create
-end
+# configure one or more handle servers
+node['handle']['servers'].each do |server|
+  # install directory for handle server
+  directory "#{node['handle']['dir']}/#{server['name']}" do
+    owner 'root'
+    group 'root'
+    mode '0755'
+    action :create
+  end
 
-# handle server configuration
-template 'config.dct' do
-  path   "#{node['handle']['dir']}/#{node['handle']['server_name']}/config.dct"
-  source 'config.dct.erb'
-  owner  'root'
-  group  'root'
-  mode   '0644'
-  cookbook 'handle'
-end
+  # handle server configuration
+  template 'config.dct' do
+    path   "#{node['handle']['dir']}/#{server['name']}/config.dct"
+    source 'config.dct.erb'
+    owner  'root'
+    group  'root'
+    mode   '0644'
+    cookbook 'handle'
+    variables(
+      this_server_id: server['this_server_id'],
+      port: server['port'],
+      http_port: server['http_port'],
+      log_save_directory: server['log_save_directory'],
+      sql_db: server['sql_db'],
+      sql_login: server['sql_login'],
+      sql_passwd: server['sql_passwd'],
+      server_admins: server['server_admins'],
+      replication_authentication: server['replication_authentication'],
+      replication_sites_handle: server['replication_sites_handle'],
+    )
+  end
 
-execute "install" do
-  user "root"
-  group "root"
-  cwd "#{node['handle']['dir']}/hsj-#{node['handle']['version']}"
-  action :run
-  command "bin/hdl-setup-server #{node['handle']['dir']}/#{node['handle']['server_name']}"
+  execute "install" do
+    user "root"
+    group "root"
+    cwd "#{node['handle']['dir']}/hsj-#{node['handle']['version']}"
+    action :run
+    command "bin/hdl-setup-server #{node['handle']['dir']}/#{server['name']}"
+  end
 end
